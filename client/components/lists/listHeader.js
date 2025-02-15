@@ -158,6 +158,12 @@ Template.listActionPopup.helpers({
     return this.findWatcher(Meteor.userId());
   }
 });
+Template.listHeader.events({
+  'click .js-magic-button'(event) {
+    event.preventDefault();
+    alert('Magic button clicked!'); // Replace this with your custom action
+  }
+});
 
 Template.listActionPopup.events({
   'click .js-list-subscribe'() {},
@@ -259,6 +265,56 @@ BlazeComponent.extendComponent({
     ];
   },
 }).register('setWipLimitPopup');
+
+
+
+
+
+Template.listHeader.onRendered(function () {
+  console.log('List header rendered');
+
+  this.$('.js-magic-button').off('click').on('click', function (event) {
+    event.preventDefault();
+
+    console.log('Magic button clicked!');
+
+    // Debugging logs to check values
+    const listId = $(event.currentTarget).closest('.js-list').attr('id').replace('js-list-', '');
+    const boardId = Utils.getCurrentBoardId();
+
+    console.log(`Extracted listId: ${listId}`);
+    console.log(`Extracted boardId: ${boardId}`);
+
+    if (!boardId || !listId) {
+      console.error('Error: Board ID or List ID is missing.');
+      alert('Failed to fetch tasks: Missing Board ID or List ID.');
+      return;
+    }
+
+    const apiUrl = `http://localhost:5001/api/${encodeURIComponent(boardId)}/${encodeURIComponent(listId)}/sorted-tasks`;
+
+    console.log(`Fetching sorted tasks from: ${apiUrl}`);
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Sorted tasks received:', data);
+        alert('Sorted tasks fetched successfully! Check the console for details.');
+      })
+      .catch(error => {
+        console.error('Error fetching sorted tasks:', error);
+      });
+  });
+});
+
+
+
+
+
+
+
+
+
 
 Template.listMorePopup.events({
   'click .js-delete': Popup.afterConfirm('listDelete', function() {

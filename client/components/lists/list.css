@@ -97,6 +97,21 @@
 .list-header .list-rotated {
 
 }
+
+.list-header-magic {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #888; /* Default color */
+  margin-left: 5px;
+}
+
+.list-header-magic:hover {
+  color: #ff9800; /* Highlight color */
+}
+
+
 .list-header .list-header-watch-icon {
   padding-left: 10px;
   color: #a6a6a6;

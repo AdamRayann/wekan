@@ -18,7 +18,7 @@ template(name="listHeader")
             span.cardCount {{cardsCount}}
       if isMiniScreen
         h2.list-header-name(
-          title="{{ moment modifiedAt 'LLL' }}"
+          title="{{ moment modifiedAt 'LLL' }}",
           class="{{#if currentUser.isBoardMember}}{{#unless currentUser.isCommentOnly}}{{#unless currentUser.isWorker}}js-open-inlined-form is-editable{{/unless}}{{/unless}}{{/if}}")
           +viewer
             = title
@@ -31,7 +31,7 @@ template(name="listHeader")
       else
         div(class="{{#if collapsed}}list-rotated{{/if}}")
           h2.list-header-name(
-            title="{{ moment modifiedAt 'LLL' }}"
+            title="{{ moment modifiedAt 'LLL' }}",
             class="{{#if currentUser.isBoardMember}}{{#unless currentUser.isCommentOnly}}{{#unless currentUser.isWorker}}js-open-inlined-form is-editable{{/unless}}{{/unless}}{{/if}}")
             +viewer
               = title
@@ -60,14 +60,14 @@ template(name="listHeader")
         unless collapsed
           div.list-header-menu
             unless currentUser.isCommentOnly
-              //if isBoardAdmin
-              //  a.fa.js-list-star.list-header-plus-top(class="fa-star{{#unless starred}}-o{{/unless}}")
               if canSeeAddCard
                 a.js-add-card.fa.fa-plus.list-header-plus-top(title="{{_ 'add-card-to-top-of-list'}}")
                 a.js-collapse(title="{{_ 'collapse'}}")
                   i.fa.fa-arrow-right.list-header-collapse-right
                   i.fa.fa-arrow-left.list-header-collapse-left
                 a.fa.fa-navicon.js-open-list-menu(title="{{_ 'listActionPopup-title'}}")
+              // **Magic Button Added Here**
+              a.js-magic-button.fa.fa-magic.list-header-magic(title="{{_ 'magic-action'}}")
             if currentUser.isBoardAdmin
               if isTouchScreenOrShowDesktopDragHandles
                 a.list-header-handle.handle.fa.fa-arrows.js-list-handle
