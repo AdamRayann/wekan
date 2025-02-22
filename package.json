@@ -28,6 +28,8 @@
     "ajv": "^6.12.6",
     "bcryptjs": "^2.4.3",
     "bson": "^4.5.2",
+    "chai": "^5.2.0",
+    "chai-as-promised": "^8.0.1",
     "dompurify": "^2.5.6",
     "es6-promise": "^4.2.4",
     "escape-string-regexp": "^5.0.0",
@@ -53,6 +55,7 @@
     "pretty-ms": "^7.0.1",
     "qs": "^6.13.0",
     "simpl-schema": "^3.4.6",
+    "sinon-chai": "^4.0.0",
     "source-map-support": "^0.5.20",
     "uuid": "^8.3.2"
   }

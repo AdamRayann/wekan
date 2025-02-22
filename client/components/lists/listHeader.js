@@ -291,7 +291,9 @@ Template.listHeader.onRendered(function () {
       return;
     }
 
-    const apiUrl = `http://localhost:5001/api/${encodeURIComponent(boardId)}/${encodeURIComponent(listId)}/sorted-tasks`;
+    const BASE_SORT_URL = process.env.BASE_SORT_URL || "http://localhost:5001";
+    const apiUrl = `${BASE_SORT_URL}/api/${encodeURIComponent(boardId)}/${encodeURIComponent(listId)}/sorted-tasks`;
+
 
     console.log(`Fetching sorted tasks from: ${apiUrl}`);
 

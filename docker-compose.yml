@@ -6,7 +6,7 @@ services:
     image: mongo:6
     container_name: wekan-db
     restart: always
-    command: mongod --logpath /dev/null --oplogSize 128 --quiet
+    command: mongod --logpath /dev/null --oplogSize 128 --replSet rs0 --quiet
     networks:
       - wekan-network
     expose:
@@ -15,8 +15,18 @@ services:
       - wekan-db:/data/db
       - wekan-db-dump:/dump
 
+  wekandb-init:
+    image: mongo:6
+    container_name: wekan-db-init
+    depends_on:
+      - wekandb
+    networks:
+      - wekan-network
+    restart: "no"
+    entrypoint: [ "sh", "-c", "sleep 5 && mongosh --host wekandb --eval 'rs.initiate()'" ]
+
   wekan:
-    image: ghcr.io/wekan/wekan:latest
+    image: wekan-app
     container_name: wekan-app
     restart: always
     networks:
@@ -24,23 +34,23 @@ services:
     depends_on:
       - wekandb
     ports:
-      - "3000:3000"  # Changed from 8080 to match API usage
+      - "3000:8080"
     environment:
       - MONGO_URL=mongodb://wekandb:27017/wekan
-      - ROOT_URL=http://wekan:3000  # Use service name instead of localhost
+      - MONGO_OPLOG_URL=mongodb://wekandb:27017/local?replicaSet=rs0
       - WITH_API=true
     volumes:
-      - wekan-files:/data:rw
+      - /home/adamr/wekan_storage:/wekan_storage:rw
 
   ai_sorting:
-    build: .
+    image: ai-cards-sort:latest
     container_name: ai-cards-sort
     restart: always
     depends_on:
       - wekan
       - rabbitmq
     environment:
-      - BASE_URL=http://wekan:3000  # Changed to service name instead of localhost
+      - BASE_URL=http://wekan:3000
       - RABBITMQ_HOST=rabbitmq
     ports:
       - "5001:5001"

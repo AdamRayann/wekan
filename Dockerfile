@@ -72,9 +72,8 @@ ENV MONGO_OPLOG_URL=mongodb://localhost:27017/local
 ENV WRITABLE_PATH="/wekan_storage"
 ENV WITH_API=true
 
-
 # Define a volume for persistent data
 VOLUME /data
 
 # Set startup command
-CMD ["meteor", "run", "--settings", "settings.json"]
+CMD ["node", "/wekan/bundle/main.js"]
