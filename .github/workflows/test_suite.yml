@@ -90,28 +90,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Remove Old Meteor
+        run: rm -rf ~/.meteor
+
+      - name: Install Latest Meteor
+        run: |
+          curl https://install.meteor.com/ | sh
+          export PATH="$HOME/.meteor:$PATH"
+          meteor update --release 3.1.2
+          meteor node -v  # Should output v20.x.x
+
       - name: Setup Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Remove Old Meteor
-        run: rm -rf ~/.meteor
-
-      - name: Install Meteor
-        run: |
-          curl https://install.meteor.com/ | sh
-          export METEOR_NODE_VERSION=20
-          export PATH="$HOME/.meteor:$PATH"
-          meteor node -v
-
       - name: Install NPM Dependencies
-        run: meteor npm ci
+        run: |
+          export METEOR_NODE_VERSION=20
+          meteor npm ci
 
       - name: Run Tests
         run: |
           export METEOR_NODE_VERSION=20
+          export PATH="$HOME/.meteor:$PATH"
+          meteor node -v  # Verify correct version before running tests
           sh ./test-wekan.sh -cv
 
       - name: Upload coverage
