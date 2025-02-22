@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   tests:
-    name: Meteor ${{ matrix.meteor }} tests
+    name: Meteor Tests (Node.js 20)
     runs-on: ubuntu-latest
     steps:
 
@@ -24,42 +24,20 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Upgrade Meteor to 3.1.2
-        run: curl https://install.meteor.com/?release=3.1.2 | sh
+      - name: Install Meteor 3.1.2
+        run: |
+          curl https://install.meteor.com/?release=3.1.2 | sh
+          export PATH="$HOME/.meteor:$PATH"
 
-      - name: Install Meteor
-        id: cache-meteor-install
-        uses: actions/cache@v4
-        with:
-          path: ~/.meteor
-          key: v1-meteor-${{ hashFiles('.meteor/versions') }}
-          restore-keys: |
-                v1-meteor-
+      - name: Set Meteor Node.js to 20
+        run: |
+          export METEOR_NODE_VERSION=20
+          meteor node -v  # Ensure correct version
 
-      - name: Cache NPM Dependencies
-        id: cache-meteor-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: v1-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-                v1-npm-
-
-      - name: Cache Meteor Build
-        id: cache-meteor-build
-        uses: actions/cache@v4
-        with:
-          path: |
-            .meteor/local/resolver-result-cache.json
-            .meteor/local/plugin-cache
-            .meteor/local/isopacks
-            .meteor/local/bundler-cache/scanner
-          key: v1-meteor_build_cache-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            v1-meteor_build_cache-
-
-      - name: Set Correct Node.js Version for Meteor
-        run: export METEOR_NODE_VERSION=20
+      - name: Clean Meteor Cache
+        run: |
+          rm -rf ~/.meteor
+          meteor reset
 
       - name: Install Dependencies
         run: meteor npm install
@@ -91,4 +69,4 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3.0.0
         with:
           path: ".coverage/lcov.info"
-          min_coverage: 1  # TODO: Increase this as tests improve
+          min_coverage: 1
