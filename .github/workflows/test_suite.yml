@@ -84,62 +84,42 @@ jobs:
 #    - run: npm run lint:markdown
 
   tests:
-    name: Meteor ${{ matrix.meteor }} tests
+    name: Meteor Tests
     runs-on: ubuntu-latest
     steps:
-
-      # CHECKOUTS
       - name: Checkout
         uses: actions/checkout@v4
 
-      # CACHING
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Remove Old Meteor
+        run: rm -rf ~/.meteor
+
       - name: Install Meteor
-        id: cache-meteor-install
-        uses: actions/cache@v4
-        with:
-          path: ~/.meteor
-          key: v1-meteor-${{ hashFiles('.meteor/versions') }}
-          restore-keys: |
-                v1-meteor-
-
-      - name: Cache NPM dependencies
-        id: cache-meteor-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: v1-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-                v1-npm-
-
-      - name: Cache Meteor build
-        id: cache-meteor-build
-        uses: actions/cache@v4
-        with:
-          path: |
-            .meteor/local/resolver-result-cache.json
-            .meteor/local/plugin-cache
-            .meteor/local/isopacks
-            .meteor/local/bundler-cache/scanner
-          key: v1-meteor_build_cache-${{ github.ref }}-${{ github.sha }}
-          restore-keys: |
-            v1-meteor_build_cache-
-
-      - name: Setup meteor
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.2'
+        run: |
+          curl https://install.meteor.com/ | sh
+          export METEOR_NODE_VERSION=20
+          export PATH="$HOME/.meteor:$PATH"
+          meteor node -v
 
       - name: Install NPM Dependencies
         run: meteor npm ci
 
       - name: Run Tests
-        run: sh ./test-wekan.sh -cv
+        run: |
+          export METEOR_NODE_VERSION=20
+          sh ./test-wekan.sh -cv
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
           name: coverage-folder
           path: .coverage/
+
 
   coverage:
     name: Coverage report
