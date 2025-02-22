@@ -1,40 +1,14 @@
-name: 'Test Wekan'
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+name: 'Dependency Review'
+on: [pull_request]
 
 permissions:
   contents: read
 
 jobs:
-  tests:
-    name: Meteor Tests
+  dependency-review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: 'Checkout Repository'
         uses: actions/checkout@v4
-
-      - name: Setup Node.js (Use Node 18)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Clean NPM Cache
-        run: npm cache clean --force
-
-      - name: Remove Old Dependencies
-        run: rm -rf node_modules package-lock.json
-
-      - name: Install Meteor (Stable Version)
-        uses: meteorengineer/setup-meteor@v2
-        with:
-          meteor-release: '2.14'
-
-      - name: Install Dependencies
-        run: meteor npm install --legacy-peer-deps
-
-      - name: Run Tests
-        run: sh ./test-wekan.sh -cv
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
