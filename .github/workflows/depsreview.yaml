@@ -1,23 +1,23 @@
-name: 'Dependency Review'
-on:
-  push:
-    branches:
-      - main
+name: 'Dependency Audit'
+on: [push, pull_request]
 
 permissions:
   contents: read
 
 jobs:
-  dependency-review:
+  dependency-audit:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout Repository'
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2  # Fetches enough history to compare changes
 
-      - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          base-ref: main  # Compare against the main branch
-          head-ref: ${{ github.ref_name }}  # Use the current pushed branch
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run Security Audit
+        run: npm audit --audit-level=high
