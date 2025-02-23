@@ -1,0 +1,32 @@
+name: Wekan Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Meteor
+        run: |
+          curl https://install.meteor.com/ | sh
+          echo "$HOME/.meteor" >> $GITHUB_PATH
+
+      - name: Verify Meteor installation
+        run: meteor --version
+
+      - name: Install dependencies
+        run: meteor npm install
+
+      - name: Run unit tests
+        run: |
+          TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package meteortesting:mocha
