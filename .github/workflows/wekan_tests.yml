@@ -29,17 +29,16 @@ jobs:
       - name: Verify Meteor installation
         run: meteor --version
 
-      - name: Set correct Node.js version for Meteor
-        run: echo "export METEOR_NODE_VERSION=14.18.1" >> $GITHUB_ENV
+      - name: Force Meteor to Use Correct Node.js Version
+        run: echo "METEOR_NODE_VERSION=14.18.1" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: meteor npm install
 
-      - name: Reset Meteor environment
+      - name: Reset Meteor Environment
         run: meteor reset
 
-      - name: Enable ES6+ support
-        run: echo "NODE_OPTIONS=--harmony" >> $GITHUB_ENV
-
-      - name: Run unit tests
-        run: TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package meteortesting:mocha
+      - name: Run Meteor Tests
+        run: |
+          export NODE_OPTIONS="--harmony"
+          TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package meteortesting:mocha
