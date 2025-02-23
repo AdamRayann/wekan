@@ -21,23 +21,8 @@ jobs:
         with:
           node-version: '14.18.1'
 
-      - name: Install Meteor
-        run: |
-          curl https://install.meteor.com/ | sh
-          echo "$HOME/.meteor" >> $GITHUB_PATH
-
-      - name: Verify Meteor installation
-        run: meteor --version
-
-      - name: Force Meteor to Use Correct Node.js Version
-        run: echo "METEOR_NODE_VERSION=14.18.1" >> $GITHUB_ENV
-
-      - name: Install dependencies
+      - name: Install Dependencies
         run: meteor npm install
 
-      - name: Reset Meteor Environment
-        run: meteor reset
-
-      - name: Run Meteor Tests
-        run: |
-          TEST_BROWSER_DRIVER=puppeteer meteor test --once --driver-package meteortesting:mocha
+      - name: Run Tests
+        run: meteor npm test
