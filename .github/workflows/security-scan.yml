@@ -1,0 +1,29 @@
+name: Wekan Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Trivy
+        run: sudo apt-get install -y trivy
+
+      - name: Build the Wekan Docker Image
+        run: docker build -t wekan-app .
+
+      - name: Scan Locally Built Wekan Image (Docker Scout)
+        run: docker scout cves wekan-app
+
+      - name: Scan Locally Built Wekan Image (Trivy)
+        run: trivy image --severity CRITICAL,HIGH wekan-app
