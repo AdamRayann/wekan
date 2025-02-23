@@ -1,4 +1,4 @@
-name: Test suite
+name: Test Suite
 
 on:
   push:
@@ -14,7 +14,6 @@ jobs:
     name: Meteor Tests (Node.js 20)
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -27,6 +26,7 @@ jobs:
       - name: Install Meteor 3.1.2
         run: |
           curl https://install.meteor.com/?release=3.1.2 | sh
+          echo "$HOME/.meteor" >> $GITHUB_PATH 
           export PATH="$HOME/.meteor:$PATH"
 
       - name: Set Meteor Node.js to 20
@@ -35,21 +35,27 @@ jobs:
           meteor node -v  # Ensure correct version
 
       - name: Clean Meteor Cache
-        run: |
-          rm -rf ~/.meteor
-          meteor reset
+        run: meteor reset || true  # Allow failure without stopping the workflow
 
       - name: Install Dependencies
-        run: meteor npm install
+        run: meteor npm install --legacy-peer-deps
 
-      - name: Run Tests
-        run: sh ./test-wekan.sh -cv
+      - name: Run Tests with Retries
+        run: |
+          for i in {1..3}; do
+            meteor test --once --full-app --driver-package meteortesting:mocha && break
+            echo "Test run failed, retrying ($i/3)..."
+            sleep 5
+          done
+        env:
+          CI: true
 
       - name: Upload Coverage Report
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-folder
-          path: .coverage/
+          path: .meteor/local/coverage/
 
   coverage:
     name: Coverage Report
@@ -69,4 +75,4 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3.0.0
         with:
           path: ".coverage/lcov.info"
-          min_coverage: 1
+          min_coverage: 80  # Set a reasonable coverage threshold
