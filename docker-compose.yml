@@ -42,20 +42,20 @@ services:
     volumes:
       - /home/adamr/wekan_storage:/wekan_storage:rw
 
-  ai_sorting:
-    image: ai-cards-sort:latest
-    container_name: ai-cards-sort
-    restart: always
-    depends_on:
-      - wekan
-      - rabbitmq
-    environment:
-      - BASE_URL=http://wekan:3000
-      - RABBITMQ_HOST=rabbitmq
-    ports:
-      - "5001:5001"
-    networks:
-      - wekan-network
+#  ai_sorting:
+#    image: ai-cards-sort:latest
+#    container_name: ai-cards-sort
+#    restart: always
+#    depends_on:
+#      - wekan
+#      - rabbitmq
+#    environment:
+#      - BASE_URL=http://wekan:3000
+#      - RABBITMQ_HOST=rabbitmq
+#    ports:
+#      - "5001:5001"
+#    networks:
+#      - wekan-network
 
   rabbitmq:
     image: rabbitmq:3-management
