@@ -36,26 +36,30 @@ services:
     ports:
       - "3000:8080"
     environment:
+      - BASE_SORT_URL= "http://ai-cards-sort:5001"
       - MONGO_URL=mongodb://wekandb:27017/wekan
       - MONGO_OPLOG_URL=mongodb://wekandb:27017/local?replicaSet=rs0
       - WITH_API=true
     volumes:
       - /home/adamr/wekan_storage:/wekan_storage:rw
 
-#  ai_sorting:
-#    image: ai-cards-sort:latest
-#    container_name: ai-cards-sort
-#    restart: always
-#    depends_on:
-#      - wekan
-#      - rabbitmq
-#    environment:
-#      - BASE_URL=http://wekan:3000
-#      - RABBITMQ_HOST=rabbitmq
-#    ports:
-#      - "5001:5001"
-#    networks:
-#      - wekan-network
+  ai_sorting:
+    image: ai-cards-sort:latest
+    container_name: ai-cards-sort
+    restart: always
+    depends_on:
+      - wekan
+      - rabbitmq
+    environment:
+      - NO_PROXY=*
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+      - BASE_URL=http://wekan:8080
+      - RABBITMQ_HOST=rabbitmq
+    ports:
+      - "5001:5001"
+    networks:
+      - wekan-network
 
   rabbitmq:
     image: rabbitmq:3-management

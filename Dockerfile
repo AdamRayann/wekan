@@ -71,6 +71,7 @@ ENV MONGO_URL=mongodb://localhost:27017/wekan
 ENV MONGO_OPLOG_URL=mongodb://localhost:27017/local
 ENV WRITABLE_PATH="/wekan_storage"
 ENV WITH_API=true
+ENV BASE_SORT_URL=http://localhost:5001
 
 # Define a volume for persistent data
 VOLUME /data

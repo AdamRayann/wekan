@@ -32,6 +32,7 @@
     "dompurify": "^2.5.6",
     "es6-promise": "^4.2.4",
     "escape-string-regexp": "^5.0.0",
+    "eslint-plugin-prettier": "^5.2.3",
     "fibers": "^5.0.3",
     "file-type": "^16.5.4",
     "filesize": "^8.0.7",
