@@ -26,7 +26,7 @@ services:
     entrypoint: [ "sh", "-c", "sleep 5 && mongosh --host wekandb --eval 'rs.initiate()'" ]
 
   wekan:
-    image: wekan-app
+    image: adamray67/wekan-app
     container_name: wekan-app
     restart: always
     networks:
@@ -44,16 +44,13 @@ services:
       - /home/adamr/wekan_storage:/wekan_storage:rw
 
   ai_sorting:
-    image: ai-cards-sort:latest
+    image: adamray67/ai-cards-sort:latest
     container_name: ai-cards-sort
     restart: always
     depends_on:
       - wekan
       - rabbitmq
     environment:
-      - NO_PROXY=*
-      - HTTP_PROXY=
-      - HTTPS_PROXY=
       - BASE_URL=http://wekan:8080
       - RABBITMQ_HOST=rabbitmq
     ports:
