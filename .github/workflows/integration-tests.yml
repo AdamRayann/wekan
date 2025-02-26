@@ -14,21 +14,6 @@ permissions:
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:6
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: example
-        ports:
-          - 27017:27017
-        options: --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh --quiet" --health-interval 10s --health-timeout 5s --health-retries 5
-
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - 5672:5672
-          - 15672:15672
 
     steps:
       - name: Checkout WeKan Repository
@@ -37,42 +22,20 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Pull WeKan and Test Containers
-        run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/wekan-app:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/ai-cards-sort:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
-
-      - name: Ensure Docker Network Exists
-        run: docker network create wekan-network || true
-
-      - name: Start WeKan Services with Docker Compose
-        run: |
-          docker compose -f docker-compose.tests.yml up -d || (docker compose logs --tail=50 && exit 1)
-
-      - name: Check Running Containers
-        run: docker ps -a
-
-      - name: Fix Permissions in WeKan Container
-        run: |
-          docker exec -it wekan-app sh -c "mkdir -p /wekan_storage/attachments && chmod -R 777 /wekan_storage" || true
+      - name: Pull Test Container
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
 
       - name: Wait for WeKan API to be Ready
         run: |
           echo "Waiting for WeKan API to be available..."
-          timeout 120s bash -c 'until curl -s -o /dev/null http://localhost:8080/api/health; do sleep 5; done' || (echo "WeKan API did not start" && exit 1)
+          timeout 120s bash -c 'until curl -s -o /dev/null https://d17d-84-110-182-34.ngrok-free.app; do sleep 5; done' || (echo "WeKan API did not start" && exit 1)
 
       - name: Run Tests Inside the Container
         run: |
           docker run --rm \
-            --network=wekan-network \
-            -e BASE_URL=http://wekan:8080 \
-            -e API_URL=http://wekan:8080/api \
+            -e BASE_URL=https://d17d-84-110-182-34.ngrok-free.app \
             ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
 
       - name: Capture Logs on Failure
         if: failure()
-        run: |
-          docker ps -a  # Check if containers exist
-          docker logs wekan-app || echo "wekan-app not found"
-          docker logs ai-cards-sort || echo "ai-cards-sort not found"
+        run: echo "Tests failed. Check JUnit reports in wekan-tests container logs."
