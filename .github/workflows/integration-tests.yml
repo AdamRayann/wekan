@@ -19,16 +19,18 @@ jobs:
       - name: Checkout WeKan Repository
         uses: actions/checkout@v4
 
+      - name: Set Up Java 23 (Fix Compilation Issue)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '23'
+          cache: 'maven'
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Pull Test Container
         run: docker pull ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
-
-      - name: Wait for WeKan API to be Ready
-        run: |
-          echo "Waiting for WeKan API to be available..."
-          timeout 120s bash -c 'until curl -s -o /dev/null https://d17d-84-110-182-34.ngrok-free.app; do sleep 5; done' || (echo "WeKan API did not start" && exit 1)
 
       - name: Run Tests Inside the Container
         run: |
