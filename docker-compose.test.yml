@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  wekandb:
+    image: mongo:6
+    container_name: wekan-db
+    restart: always
+    command: mongod --logpath /dev/null --oplogSize 128 --replSet rs0 --quiet
+    networks:
+      - wekan-network
+    expose:
+      - 27017
+    volumes:
+      - wekan-db:/data/db
+      - wekan-db-dump:/dump
+
+  wekan:
+    image: adamray67/wekan-app
+    container_name: wekan-app
+    restart: always
+    depends_on:
+      - wekandb
+    ports:
+      - "3000:8080"
+    networks:
+      - wekan-network
+
+  ai_sorting:
+    image: adamray67/ai-cards-sort:latest
+    container_name: ai-cards-sort
+    restart: always
+    depends_on:
+      - wekan
+    environment:
+      - BASE_URL=http://wekan:8080
+    networks:
+      - wekan-network
+
+  tests:
+    image: your-dockerhub-username/wekan-tests:latest
+    container_name: wekan-tests
+    depends_on:
+      - wekan
+    environment:
+      - BASE_URL=http://wekan:8080
+    networks:
+      - wekan-network
+
+networks:
+  wekan-network:
+    driver: bridge
+
+volumes:
+  wekan-db:
+  wekan-db-dump:

@@ -1,0 +1,61 @@
+name: Run Integration Tests
+
+on:
+  push:
+    branches:
+      - main  # Runs on push to main branch
+  pull_request:
+    branches:
+      - main  # Runs on PRs to main
+
+permissions:
+  contents: read
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:6
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
+        ports:
+          - 27017:27017
+        options: --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh --quiet" --health-interval 10s --health-timeout 5s --health-retries 5
+
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+    steps:
+      - name: Checkout WeKan Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Pull WeKan and Test Containers
+        run: |
+          docker pull adamray67/wekan-app:latest
+          docker pull adamray67/ai-cards-sort:latest
+          docker pull your-dockerhub-username/wekan-tests:latest
+
+      - name: Start WeKan Services with Docker Compose
+        run: docker compose -f docker-compose.test.yml up -d
+
+      - name: Run Tests Inside the Container
+        run: |
+          docker run --rm \
+            --network=wekan-network \
+            -e BASE_URL=http://wekan:8080 \
+            -e API_URL=http://wekan:8080/api \
+            your-dockerhub-username/wekan-tests:latest
+
+      - name: Capture WeKan Logs (if test fails)
+        if: failure()
+        run: |
+          docker logs wekan-app
+          docker logs ai-cards-sort
