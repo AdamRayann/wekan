@@ -43,8 +43,19 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/ai-cards-sort:latest
           docker pull ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
 
+      - name: Ensure Docker Network Exists
+        run: docker network create wekan-network || true
+
       - name: Start WeKan Services with Docker Compose
         run: docker compose -f docker-compose.test.yml up -d
+
+      - name: Wait for WeKan to Start
+        run: |
+          echo "Waiting for WeKan API to be available..."
+          timeout 60s bash -c 'until curl -s -o /dev/null http://localhost:8080/api/health; do sleep 5; done' || (echo "WeKan API did not start" && exit 1)
+
+      - name: Verify Network Exists
+        run: docker network ls
 
       - name: Run Tests Inside the Container
         run: |
@@ -57,5 +68,5 @@ jobs:
       - name: Capture WeKan Logs (if test fails)
         if: failure()
         run: |
-          docker logs wekan-app
-          docker logs ai-cards-sort
+          docker logs wekan-app || true
+          docker logs ai-cards-sort || true
