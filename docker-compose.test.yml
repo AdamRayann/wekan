@@ -37,7 +37,7 @@ services:
       - wekan-network
 
   tests:
-    image: your-dockerhub-username/wekan-tests:latest
+    image: adamray67/wekan-tests:latest
     container_name: wekan-tests
     depends_on:
       - wekan
