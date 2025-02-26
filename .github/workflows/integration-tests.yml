@@ -47,11 +47,15 @@ jobs:
         run: docker network create wekan-network || true
 
       - name: Start WeKan Services with Docker Compose
-        run: docker compose -f docker-compose.tests.yml up -d
+        run: |
+          docker compose -f docker-compose.tests.yml up -d || (docker compose logs --tail=50 && exit 1)
+
+      - name: Check Running Containers
+        run: docker ps -a
 
       - name: Fix Permissions in WeKan Container
         run: |
-          docker exec -it wekan-app sh -c "mkdir -p /wekan_storage/attachments && chmod -R 777 /wekan_storage"
+          docker exec -it wekan-app sh -c "mkdir -p /wekan_storage/attachments && chmod -R 777 /wekan_storage" || true
 
       - name: Wait for WeKan API to be Ready
         run: |
@@ -69,5 +73,6 @@ jobs:
       - name: Capture Logs on Failure
         if: failure()
         run: |
-          docker logs wekan-app || true
-          docker logs ai-cards-sort || true
+          docker ps -a  # Check if containers exist
+          docker logs wekan-app || echo "wekan-app not found"
+          docker logs ai-cards-sort || echo "ai-cards-sort not found"
