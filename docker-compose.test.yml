@@ -39,6 +39,8 @@ services:
       - WITH_API=true
     networks:
       - wekan-network
+    volumes:
+      - wekan-storage:/wekan_storage:rw  # ✅ FIX: Use a Docker volume instead of a host path
 
   ai_sorting:
     image: adamray67/ai-cards-sort:latest
@@ -68,3 +70,4 @@ networks:
 volumes:
   wekan-db:
   wekan-db-dump:
+  wekan-storage:  # ✅ FIX: Add Docker-managed volume for /wekan_storage
