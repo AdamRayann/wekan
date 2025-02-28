@@ -10,34 +10,23 @@ on:
 
 permissions:
   contents: read
+  actions: read
+  checks: write
 
 jobs:
   jmeter:
     name: Run JMeter Tests
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install JMeter
-        run: |
-          sudo apt update
-          sudo apt install -y openjdk-11-jre
-          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.2.tgz
-          tar -xvzf apache-jmeter-5.6.2.tgz
-          echo "JMETER_HOME=$PWD/apache-jmeter-5.6.2" >> $GITHUB_ENV
-          echo "$PWD/apache-jmeter-5.6.2/bin" >> $GITHUB_PATH
-
-      - name: Ensure JMeter is Installed
-        run: jmeter --version
-
-      - name: Run JMeter Load Tests
-        run: |
-          jmeter -n -t wekan_performance.jmx \
-          -l reports/jmeter-results.jtl \
-          -e -o reports/html-reports \
-          --loglevel INFO
+      - name: Run JMeter Action on a test
+        uses: rbhadti94/apache-jmeter-action@v0.5.0
+        with:
+          testFilePath: wekan_performance.jmx
+          outputReportsFolder: reports/
+          args: "--loglevel INFO"
 
       - name: Upload JMeter Test Results
         uses: actions/upload-artifact@v4
