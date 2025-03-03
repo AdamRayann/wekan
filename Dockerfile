@@ -73,7 +73,7 @@ ENV WRITABLE_PATH="/wekan_storage"
 ENV WITH_API=true
 ENV BASE_SORT_URL=http://localhost:5001
 
-# Define a volume for persistent data
+# define a volume for persistent data
 VOLUME /data
 
 # Set startup command
