@@ -1,11 +1,10 @@
-name: Wekan Tests
+name: Unit Tests
 
 on:
   push:
-
-  pull_request:
     branches:
       - main
+      - 'feature/**'
 
 jobs:
   test:
