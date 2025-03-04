@@ -67,7 +67,7 @@ jobs:
 
       - name: Run Lighthouse Performance Audit
         run: |
-          lighthouse https://d17d-84-110-182-34.ngrok-free.app \
+          lighthouse https://5221-84-110-182-34.ngrok-free.app \
             --output=json \
             --output=html \
             --output-path=./lighthouse-report \
