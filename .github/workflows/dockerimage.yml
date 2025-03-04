@@ -14,7 +14,7 @@ permissions:
   checks: write
 
 jobs:
-  # ✅ Step 1: Run Integration Tests
+
   integration-tests:
     runs-on: ubuntu-latest
     steps:
@@ -33,9 +33,24 @@ jobs:
             -e base_url=https://d17d-84-110-182-34.ngrok-free.app \
             ${{ secrets.DOCKER_USERNAME }}/wekan-tests:latest
 
-  # ✅ Step 2: Run JMeter Performance Tests
+
+  build-image:
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build the Docker Image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/wekan-app:latest
+
+
   jmeter-tests:
     runs-on: ubuntu-latest
+    needs: [build-image]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -53,19 +68,13 @@ jobs:
           name: jmeter-test-results
           path: reports/
 
-  # ✅ Step 3: Build & Push Docker Image (Only if Tests Pass)
-  build-and-push:
-    runs-on: ubuntu-latest
-    needs: [integration-tests, jmeter-tests]  # Runs only if both tests succeed
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
+  push-image:
+    runs-on: ubuntu-latest
+    needs: [jmeter-tests]
+    steps:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build the Docker Image
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/wekan-app:latest
 
       - name: Push the Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/wekan-app:latest
