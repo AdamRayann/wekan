@@ -1,4 +1,4 @@
-name: CI Pipeline for Wekan App
+name: CI Pipeline for Integration env
 
 on:
   push:
@@ -54,6 +54,30 @@ jobs:
         with:
           name: jmeter-test-results
           path: reports/
+
+  lighthouse-tests:
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Lighthouse CLI
+        run: npm install -g lighthouse
+
+      - name: Run Lighthouse Performance Audit
+        run: |
+          lighthouse https://d17d-84-110-182-34.ngrok-free.app \
+            --output=json \
+            --output=html \
+            --output-path=./lighthouse-report \
+            --chrome-flags="--headless"
+
+      - name: Upload Lighthouse Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lighthouse-report.html
 
 
   build-and-push:
