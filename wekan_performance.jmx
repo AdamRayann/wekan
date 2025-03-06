@@ -30,7 +30,7 @@
         </HTTPSamplerProxy>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults">
-          <stringProp name="HTTPSampler.domain">7a82-84-110-182-34.ngrok-free.app</stringProp>
+          <stringProp name="HTTPSampler.domain">05e6-212-199-36-114.ngrok-free.app</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
             <collectionProp name="Arguments.arguments"/>
