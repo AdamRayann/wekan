@@ -1,6 +1,6 @@
 ### [🚀 Automated Testing & Feature Implementation for Wekan (Java, Docker, RabbitMQ, CI/CD) (Jan 2025 – Feb 2025)](https://www.canva.com/design/DAGgZ2Qkylc/_nHOjuIGLun6J_FbEnk-4Q/view?utm_content=DAGgZ2Qkylc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h2f642b72dd)
 
-- **[Developed and integrated a new feature** into the Wekan open-source task management platform, interacting with a **third-party AI model (Llama AI)** for automated task sorting.](https://github.com/AdamRayann/AICardsSorter.git)
+- [**Developed and integrated a new feature**](https://github.com/AdamRayann/AICardsSorter.git) into the Wekan open-source task management platform, interacting with a **third-party AI model (Llama AI)** for automated task sorting.
 - **Designed and implemented a microservices-based architecture** in **Docker Compose**, ensuring scalability and modularity.
 - **Integrated message-based communication** using **RabbitMQ** for **asynchronous processing** of card creation and deletion.
 - **Handled API requests efficiently** within the microservice architecture, ensuring seamless AI model interaction and optimized response times.
