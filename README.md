@@ -15,7 +15,8 @@
 
 #### **✅ Integration Testing**
 - **API testing** using **REST Assured** to verify endpoint functionality.
-- **UI testing** via **Selenium Grid** for cross-browser and multi-device validation.
+- **UI testing** via **Selenium Grid** for cross-browser and multi-device validation.  
+- **[GitHub Repository: Wekan Integration Tests](https://github.com/AdamRayann/WekanTesting.git)**  
 
 #### **✅ Load & Performance Testing**
 - Conducted **stress tests and performance benchmarking** to optimize response times.
